@@ -55,6 +55,16 @@ Button.TextScaled = true
 local buttonCorner = Instance.new("UICorner", Button)
 buttonCorner.CornerRadius = UDim.new(0,26)
 
+local Note = Instance.new("TextLabel", Main)
+Note.Size = UDim2.new(0.9,0,0,60)
+Note.Position = UDim2.new(0.05,0,0.5,40)
+Note.BackgroundTransparency = 1
+Note.TextWrapped = true
+Note.Text = "NOTE : GRAB A BRAINROT THEN PRESS THE BUTTON ONLY DONT WALK OR DO ANYTHING"
+Note.TextColor3 = Color3.new(1,1,1)
+Note.TextScaled = true
+Note.Font = Enum.Font.FredokaOne
+
 local function getCharacter()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
