@@ -1,0 +1,110 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local targetPosition = Vector3.new(115,3,42)
+local moveSpeed = 300
+local fixedHeight = 214
+local moving = false
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "MovementGui"
+
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0, 360, 0, 460)
+Main.Position = UDim2.new(0.5, -180, 0.5, -220)
+Main.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Main.BackgroundTransparency = 0.1
+Main.Active = true
+
+local mainCorner = Instance.new("UICorner", Main)
+mainCorner.CornerRadius = UDim.new(0,16)
+
+local stroke = Instance.new("UIStroke", Main)
+stroke.Thickness = 5
+
+local hue = 0
+RunService.RenderStepped:Connect(function(delta)
+	hue += delta * 0.2
+	if hue > 1 then hue = 0 end
+	stroke.Color = Color3.fromHSV(hue,1,1)
+end)
+
+local dragging = false
+local dragStart
+local startPos
+
+Main.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = Main.Position
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		Main.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1,0,0,40)
+Title.BackgroundTransparency = 1
+Title.Text = "Zephyx Hub"
+Title.TextColor3 = Color3.new(1,1,1)
+Title.TextScaled = true
+Title.Font = Enum.Font.FredokaOne
+
+local Button = Instance.new("TextButton", Main)
+Button.Size = UDim2.new(0,220,0,60)
+Button.Position = UDim2.new(0.5,-110,0.5,-30)
+Button.Text = "Activate Jump"
+Button.BackgroundColor3 = Color3.fromRGB(128,0,128)
+Button.TextColor3 = Color3.new(1,1,1)
+Button.Font = Enum.Font.SourceSansBold
+Button.TextScaled = true
+
+local buttonCorner = Instance.new("UICorner", Button)
+buttonCorner.CornerRadius = UDim.new(0,26)
+
+local function activateJump()
+	if moving then return end
+	moving = true
+
+	while hrp.Position.Y < fixedHeight do
+		hrp.CFrame = CFrame.new(hrp.Position.X, hrp.Position.Y + 5, hrp.Position.Z)
+		RunService.RenderStepped:Wait()
+	end
+
+	while true do
+		local direction = Vector3.new(targetPosition.X - hrp.Position.X, 0, targetPosition.Z - hrp.Position.Z)
+		if direction.Magnitude < 2 then
+			hrp.CFrame = CFrame.new(targetPosition.X, fixedHeight, targetPosition.Z)
+			break
+		end
+		hrp.CFrame += direction.Unit * moveSpeed * RunService.RenderStepped:Wait()
+	end
+
+	moving = false
+end
+
+Button.MouseButton1Click:Connect(activateJump)
