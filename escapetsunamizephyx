@@ -95,3 +95,14 @@ local function activateJump()
 end
 
 Button.MouseButton1Click:Connect(activateJump)
+
+local whitelist = {
+	["Username1"] = true,
+	["Username2"] = true,
+	["Username3"] = true,
+}
+
+if not whitelist[player.Name] then
+	player:Kick("You are not whitelisted.")
+	return
+end
