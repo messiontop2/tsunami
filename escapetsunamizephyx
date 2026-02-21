@@ -5,7 +5,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 local whitelist = {
-	["Username1"] = true,
+	["dfgghhyu88"] = true,
 	["Username2"] = true,
 	["Username3"] = true,
 }
