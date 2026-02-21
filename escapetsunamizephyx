@@ -3,8 +3,6 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
 
 local targetPosition = Vector3.new(115,3,42)
 local moveSpeed = 300
@@ -22,6 +20,7 @@ Main.Position = UDim2.new(0.5, -180, 0.5, -220)
 Main.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Main.BackgroundTransparency = 0.1
 Main.Active = true
+Main.Draggable = true
 
 local mainCorner = Instance.new("UICorner", Main)
 mainCorner.CornerRadius = UDim.new(0,16)
@@ -34,36 +33,6 @@ RunService.RenderStepped:Connect(function(delta)
 	hue += delta * 0.2
 	if hue > 1 then hue = 0 end
 	stroke.Color = Color3.fromHSV(hue,1,1)
-end)
-
-local dragging = false
-local dragStart
-local startPos
-
-Main.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = Main.Position
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-		local delta = input.Position - dragStart
-		Main.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
 end)
 
 local Title = Instance.new("TextLabel", Main)
@@ -86,9 +55,17 @@ Button.TextScaled = true
 local buttonCorner = Instance.new("UICorner", Button)
 buttonCorner.CornerRadius = UDim.new(0,26)
 
+local function getCharacter()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+	return character, hrp
+end
+
 local function activateJump()
 	if moving then return end
 	moving = true
+
+	local character, hrp = getCharacter()
 
 	while hrp.Position.Y < fixedHeight do
 		hrp.CFrame = CFrame.new(hrp.Position.X, hrp.Position.Y + 5, hrp.Position.Z)
