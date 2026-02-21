@@ -4,6 +4,17 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
+local whitelist = {
+	["Username1"] = true,
+	["Username2"] = true,
+	["Username3"] = true,
+}
+
+if not whitelist[player.Name] then
+	player:Kick("You are not whitelisted.")
+	return
+end
+
 local targetPosition = Vector3.new(115,3,42)
 local moveSpeed = 300
 local fixedHeight = 214
@@ -46,7 +57,7 @@ Title.Font = Enum.Font.FredokaOne
 local Button = Instance.new("TextButton", Main)
 Button.Size = UDim2.new(0,220,0,60)
 Button.Position = UDim2.new(0.5,-110,0.5,-30)
-Button.Text = "Auto Tp"
+Button.Text = "Activate Jump"
 Button.BackgroundColor3 = Color3.fromRGB(128,0,128)
 Button.TextColor3 = Color3.new(1,1,1)
 Button.Font = Enum.Font.SourceSansBold
@@ -95,14 +106,3 @@ local function activateJump()
 end
 
 Button.MouseButton1Click:Connect(activateJump)
-
-local whitelist = {
-	["Username1"] = true,
-	["Username2"] = true,
-	["Username3"] = true,
-}
-
-if not whitelist[player.Name] then
-	player:Kick("You are not whitelisted.")
-	return
-end
